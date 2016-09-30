@@ -240,7 +240,7 @@ server_failure(struct context *ctx, struct datastore *server)
 	stats_pool_incr(ctx, server_ejects);
 
 	server->failure_count = 0;
-	server->next_retry_us = next;
+	server->next_retry_us = next * 1000;
 
 	status = server_pool_run(pool);
 	if (status != DN_OK) {

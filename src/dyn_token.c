@@ -178,7 +178,7 @@ parse_dyn_token(uint8_t *start, uint32_t len, struct dyn_token *token)
 }
 
 int32_t 
-cmp_dyn_token(struct dyn_token *t1, struct dyn_token *t2)
+cmp_dyn_token(const struct dyn_token *t1, const struct dyn_token *t2)
 {
 	ASSERT(t1 != NULL);
 	ASSERT(t2 != NULL);

@@ -205,6 +205,7 @@ rstatus_t conn_connect(struct context *ctx, struct conn *conn);
 rstatus_t conn_add_out(struct conn *conn);
 rstatus_t conn_del_out(struct conn *conn);
 rstatus_t conn_add_to_epoll(struct conn *conn);
+rstatus_t conn_del_to_epoll(struct conn *conn);
 
 ssize_t conn_recv_data(struct conn *conn, void *buf, size_t size);
 ssize_t conn_sendv_data(struct conn *conn, struct array *sendv, size_t nsend);

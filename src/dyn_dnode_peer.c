@@ -17,7 +17,7 @@
 
 static rstatus_t dnode_peer_pool_update(struct server_pool *pool);
 
-static bool
+bool
 is_same_dc(struct server_pool *sp, struct peer *peer_node)
 {
     return string_compare(&sp->dc_name, &peer_node->dc) == 0;
@@ -1081,7 +1081,7 @@ get_dnode_peer_in_rack_for_key(struct context *ctx, struct server_pool *pool,
 }
 
 struct conn *
-dnode_peer_pool_server_conn(struct context *ctx, struct node *peer)
+dnode_peer_pool_server_conn(struct context *ctx, struct peer *peer)
 {
     // This peer is marked as down. lets check if it is time to connect
     if (peer->state == DOWN) {
@@ -1115,7 +1115,7 @@ dnode_peer_pool_server_conn(struct context *ctx, struct node *peer)
         log_debug(LOG_WARN, "Detecting peer '%.*s' is set with state Reset", peer->name);
 
         dnode_peer_close_socket(conn);
-        status = conn_connect(ctx, conn);
+        rstatus_t status = conn_connect(ctx, conn);
         if (status != DN_OK) {
             conn->err = EHOSTDOWN;
             dnode_peer_close(ctx, conn);

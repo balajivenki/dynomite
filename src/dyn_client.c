@@ -313,7 +313,6 @@ client_handle_response(struct conn *conn, msgid_t reqid, struct msg *rsp)
             }
         }
     } else if (status == DN_OK) {
-        struct context *ctx = conn_to_ctx(conn);
         status = conn_add_out(conn);
         if (status != DN_OK) {
             conn->err = errno;
@@ -662,7 +661,8 @@ admin_local_req_forward(struct context *ctx, struct conn *c_conn, struct msg *ms
     ASSERT((c_conn->type == CONN_CLIENT) ||
            (c_conn->type == CONN_DNODE_PEER_CLIENT));
 
-     struct node *peer = dnode_peer_pool_server(ctx, c_conn->owner, rack, key, keylen, msg->msg_type);
+    struct peer *peer = get_dnode_peer_in_rack_for_key(ctx, c_conn->owner, rack,
+                                                       key, keylen, msg->msg_type);
      if (!peer->is_local) {
          send_rsp_integer(ctx, c_conn, msg);
          return;
@@ -686,7 +686,7 @@ remote_req_forward(struct context *ctx, struct conn *c_conn, struct msg *msg,
     ASSERT((c_conn->type == CONN_CLIENT) ||
            (c_conn->type == CONN_DNODE_PEER_CLIENT));
 
-    struct node *peer = get_dnode_peer_in_rack_for_key(ctx, c_conn->owner, rack,
+    struct peer *peer = get_dnode_peer_in_rack_for_key(ctx, c_conn->owner, rack,
                                                        key, keylen, msg->msg_type);
     if (peer->is_local) {
         log_debug(LOG_VERB, "c_conn: %p forwarding %d:%d is local", c_conn,
@@ -743,7 +743,7 @@ remote_req_forward(struct context *ctx, struct conn *c_conn, struct msg *msg,
 
     log_debug(LOG_VERB, "c_conn: %p forwarding %d:%d to p_conn %p", c_conn,
             msg->id, msg->parent_id, p_conn);
-    dnode_peer_req_forward(ctx, c_conn, p_conn, msg, rack, key, keylen);
+    dnode_peer_req_forward(ctx, c_conn, peer, msg, key, keylen);
 }
 
 static void

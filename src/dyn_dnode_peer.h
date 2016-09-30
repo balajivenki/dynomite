@@ -22,7 +22,8 @@ struct peer {
     uint32_t           ns_conn_q;     /* # server connection */
     struct conn_tqh    s_conn_q;      /* server connection q */
 
-    msec_t             next_retry;    /* next retry time in msec */
+    usec_t             next_retry_us;    /* next retry time in usec */
+    sec_t              reconnect_backoff_sec; /* exponential backoff delay in sec */
     uint32_t           failure_count; /* # consecutive failures */
 
     struct string      rack;          /* logical rack */
@@ -49,14 +50,14 @@ struct peer *get_dnode_peer_in_rack_for_key(struct context *ctx, struct server_p
 void dnode_req_forward_error(struct context *ctx, struct conn *p_conn, struct msg *msg, err_t error);
 void dnode_peer_req_forward(struct context *ctx, struct conn *c_conn, struct peer *peer,
 		                    struct msg *msg, uint8_t *key, uint32_t keylen);
-struct conn *dnode_peer_pool_conn(struct context *ctx, struct server_pool *pool, struct rack *rack, uint8_t *key, uint32_t keylen, uint8_t msg_type);
+struct conn *dnode_peer_pool_server_conn(struct context *ctx, struct peer *peer);
 rstatus_t dnode_peer_pool_preconnect(struct context *ctx);
 void dnode_peer_pool_disconnect(struct context *ctx);
 rstatus_t dnode_peer_forward_state(void *rmsg);
 rstatus_t dnode_peer_add(void *rmsg);
 rstatus_t dnode_peer_replace(void *rmsg);
 rstatus_t dnode_peer_handshake_announcing(void *rmsg);
-bool is_same_dc(struct server_pool *sp, struct node *peer_node);
+bool is_same_dc(struct server_pool *sp, struct peer *peer_node);
 
 void init_dnode_peer_conn(struct conn *conn);
 void preselect_remote_rack_for_replication(struct context *ctx);
